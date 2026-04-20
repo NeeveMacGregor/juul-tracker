@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinny's Juul Taper Plan</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #191521;
+    --surface: #231e2e;
+    --surface-raised: #2d2838;
+    --border: #3a3447;
+    --border-strong: #4f4862;
+    --text: #ede8f5;
+    --text-muted: #9e98b0;
+    --text-light: #726c82;
+    --purple: #b865d4;
+    --purple-bright: #d08ce8;
+    --purple-soft: #2f2040;
+    --purple-dark: #e6bcf5;
+    --green: #4a9e95;
+    --green-soft: #15302e;
+    --green-dark: #8fd4cb;
+    --yellow: #c9a55a;
+    --yellow-soft: #2d2515;
+    --yellow-dark: #e8cd95;
+    --red: #c9697a;
+    --red-soft: #2e1a20;
+    --red-dark: #e8a8b5;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 24px 16px 48px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .header {
+    text-align: center;
+    padding: 24px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .header .greeting {
+    font-size: 13px;
+    color: var(--purple);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  h2 {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 32px 0 12px;
+    letter-spacing: -0.01em;
+  }
+  .section-note {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .stat-value.purple { color: var(--purple-bright); }
+  .weeks {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .week-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .week-block.open {
+    border-color: var(--purple);
+  }
+  .week-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: transparent;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    color: var(--text);
+  }
+  .week-header-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .week-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .week-num {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  .week-block.open .week-num { color: var(--purple-dark); }
+  .week-pods {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .week-block.open .week-pods { color: var(--purple-bright); }
+  .week-note {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .week-progress-pill {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--bg);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .chevron {
+    font-size: 12px;
+    color: var(--text-muted);
+    width: 12px;
+    text-align: center;
+  }
+  .days-wrap {
+    border-top: 1px solid var(--border);
+    padding: 8px 10px 10px;
+  }
+  .day-row {
+    display: grid;
+    grid-template-columns: 44px 1fr 60px;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 6px;
+    border-radius: 8px;
+  }
+  .day-row.logged { background: rgba(184, 101, 212, 0.06); }
+  .day-row.logged.over { background: rgba(201, 105, 122, 0.08); }
+  .day-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .day-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .day-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    font-family: inherit;
+    transition: all 0.1s ease;
+  }
+  .day-btn:hover {
+    border-color: var(--purple);
+    color: var(--purple-bright);
+  }
+  .day-btn:active {
+    transform: scale(0.92);
+  }
+  .day-pods {
+    font-size: 15px;
+    font-weight: 500;
+    min-width: 32px;
+    text-align: center;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .day-row.logged .day-pods { color: var(--purple-bright); }
+  .day-row.logged.over .day-pods { color: var(--red-dark); }
+  .day-status {
+    font-size: 11px;
+    color: var(--text-light);
+    text-align: right;
+    font-weight: 500;
+  }
+  .day-row.logged .day-status { color: var(--green-dark); }
+  .day-row.logged.over .day-status { color: var(--red-dark); }
+  .week-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 10px 4px;
+    margin-top: 6px;
+    border-top: 1px dashed var(--border);
+    font-size: 12px;
+  }
+  .week-total-label {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .week-total-value {
+    color: var(--text);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 520px) {
+    .cards, .stats, .weeks { grid-template-columns: 1fr 1fr; }
+    .stats { grid-template-columns: 1fr; }
+    .cards { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .card-title.sage { color: var(--green-dark); }
+  .card-title.sage::before { background: var(--green); }
+  .card-title.terracotta { color: var(--red-dark); }
+  .card-title.terracotta::before { background: var(--red); }
+  .card p {
+    font-size: 14px;
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+  .card p:last-child { margin-bottom: 0; }
+  .card p strong { font-weight: 500; color: var(--text); }
+  .tools {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  @media (max-width: 520px) {
+    .tools { grid-template-columns: repeat(2, 1fr); }
+  }
+  .tool {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .tool-name {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    color: var(--yellow-dark);
+  }
+  .tool-when {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .timeline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .milestone {
+    padding: 4px 14px;
+    border-left: 3px solid var(--green);
+  }
+  .milestone-week {
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 2px;
+    color: var(--green-dark);
+  }
+  .milestone-body {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-light);
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 32px;
+  }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 16px;
+  }
+  .reset-btn:hover { border-color: var(--purple); color: var(--purple); }
+  .progress-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .sync-status {
+    font-size: 11px;
+    color: var(--text-light);
+    letter-spacing: 0.04em;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+  }
+  .sync-status.syncing { color: var(--text-muted); }
+  .sync-status.synced { color: var(--green-dark); }
+  .sync-status.error { color: var(--red-dark); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="greeting">For Vinny, from angel bby</div>
+  <h1>Your 8-week Juul taper</h1>
+  <p class="subtitle">A step-down plan from 2 pods a day to zero. Slow on purpose. You got this.</p>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">Where you're starting</div>
+    <div class="stat-value">2 pods a day</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Where you're ending</div>
+    <div class="stat-value">0, in 8 weeks</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Money saved so far</div>
+    <div class="stat-value purple" id="money-saved">$0</div>
+  </div>
+</div>
+
+<h2>Your weekly step-down</h2>
+<p class="section-note">Tap a week to open it, then log how many pods you used each day with − and +. Stay at or under the daily number. Half-pod increments — you know your own usage.</p>
+
+<div class="weeks" id="weeks-grid"></div>
+
+<div class="progress-footer">
+  <button class="reset-btn" onclick="resetProgress()">Reset progress</button>
+  <span class="sync-status" id="sync-status"></span>
+</div>
+
+<h2>When a craving hits</h2>
+<div class="cards">
+  <div class="card">
+    <div class="card-title sage">The 4 D's — do one</div>
+    <p><strong>Delay</strong> — set a 10-min timer. Cravings peak in 3–5 min, then fade.</p>
+    <p><strong>Drink</strong> — cold water, slow sips. Resets the oral thing.</p>
+    <p><strong>Deep breathe</strong> — 4 in, 7 hold, 8 out. Four rounds.</p>
+    <p><strong>Distract</strong> — draw, walk, cold shower, push-ups.</p>
+  </div>
+  <div class="card">
+    <div class="card-title terracotta">Watch out for these</div>
+    <p><strong>Between clients</strong> — biggest trigger. Keep gum in your pocket.</p>
+    <p><strong>After meals</strong> — walk outside for 5 min first, then decide.</p>
+    <p><strong>Driving</strong> — put the pod in the trunk, not the console.</p>
+    <p><strong>Stress spikes</strong> — say it out loud: "I'm stressed." Then breathe.</p>
+  </div>
+</div>
+
+<h2>Stuff to keep around</h2>
+<div class="tools">
+  <div class="tool"><div class="tool-name">Nicotine gum 4mg</div><div class="tool-when">Weeks 5+</div></div>
+  <div class="tool"><div class="tool-name">Toothpicks</div><div class="tool-when">Mouth fidget</div></div>
+  <div class="tool"><div class="tool-name">Sugar-free mints</div><div class="tool-when">Quick hit</div></div>
+  <div class="tool"><div class="tool-name">Fidget or putty</div><div class="tool-when">Hand habit</div></div>
+  <div class="tool"><div class="tool-name">Seltzer</div><div class="tool-when">Ritual swap</div></div>
+  <div class="tool"><div class="tool-name">Cold water bottle</div><div class="tool-when">Craving reset</div></div>
+</div>
+
+<h2>What your body's doing</h2>
+<div class="timeline">
+  <div class="milestone"><div class="milestone-week">Week 1–2</div><div class="milestone-body">Heart rate normalizes. Sleep improves.</div></div>
+  <div class="milestone"><div class="milestone-week">Week 3–4</div><div class="milestone-body">Taste and smell sharpen. Lungs up ~10%.</div></div>
+  <div class="milestone"><div class="milestone-week">Week 5–6</div><div class="milestone-body">Better circulation. Skin looks clearer.</div></div>
+  <div class="milestone"><div class="milestone-week">Week 7–8</div><div class="milestone-body">Anxiety baseline drops. Dopamine rewires.</div></div>
+</div>
+
+<div class="footer">
+  Progress syncs to Google Sheets. Works offline — changes save next time you're connected.
+</div>
+
+<script>
+// =====================================================
+// PASTE YOUR APPS SCRIPT WEB APP URL HERE
+// (After deploying the Apps Script from apps_script.js)
+// =====================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQ3uCQmQ2JQOnois9y1CMvxOIVaD6kWhWO7T2ZDskYbc06DRNZhY_5CLRwuX4Q10UZVQ/exec';
+// =====================================================
+
+const weeks = [
+  { n: 1, limit: 1.5, perDay: "1.5", weekly: 10, note: "Cut the afternoon one" },
+  { n: 2, limit: 1.5, perDay: "1.5", weekly: 10, note: "Hold the line" },
+  { n: 3, limit: 1, perDay: "1", weekly: 7, note: "One a day, max" },
+  { n: 4, limit: 1, perDay: "1", weekly: 7, note: "Halfway there" },
+  { n: 5, limit: 0.5, perDay: "Half", weekly: 4, note: "Start using gum" },
+  { n: 6, limit: 0.5, perDay: "Half", weekly: 4, note: "Getting real" },
+  { n: 7, limit: 0.25, perDay: "Quarter", weekly: 2, note: "Hardest week" },
+  { n: 8, limit: 0, perDay: "None", weekly: 0, note: "Quit. You did it." }
+];
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const POD_COST = 4;
+const BASELINE_DAILY = 2;
+const STORAGE_KEY = 'vinny_taper_progress_v2';
+const USING_SHEET = APPS_SCRIPT_URL && APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE';
+
+// Progress shape: { "1-0": 1, "1-1": 2, ... } where key is "week-dayIndex" and value is pods used
+let progress = {};
+let expandedWeek = 1;
+
+// Always load localStorage first so UI is instant
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    const parsed = JSON.parse(saved);
+    progress = parsed.progress || {};
+    expandedWeek = parsed.expandedWeek || 1;
+  }
+} catch(e) {}
+
+const grid = document.getElementById('weeks-grid');
+const moneyEl = document.getElementById('money-saved');
+const statusEl = document.getElementById('sync-status');
+
+function setStatus(text, type) {
+  if (!statusEl) return;
+  statusEl.textContent = text;
+  statusEl.className = 'sync-status' + (type ? ' ' + type : '');
+}
+
+function saveLocal() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ progress, expandedWeek }));
+  } catch(e) {}
+}
+
+function callSheet(params) {
+  if (!USING_SHEET) return Promise.resolve({ success: true });
+  const qs = new URLSearchParams(params).toString();
+  return fetch(APPS_SCRIPT_URL + '?' + qs, { method: 'GET', mode: 'cors' })
+    .then(r => r.json());
+}
+
+async function loadFromSheet() {
+  if (!USING_SHEET) return;
+  setStatus('Syncing...', 'syncing');
+  try {
+    const data = await callSheet({ action: 'load' });
+    if (data && !data.error) {
+      progress = data.progress || {};
+      expandedWeek = data.expandedWeek || 1;
+      saveLocal();
+      render();
+      setStatus('Synced', 'synced');
+      setTimeout(() => setStatus(''), 2000);
+    } else {
+      setStatus('Sync error', 'error');
+    }
+  } catch (e) {
+    setStatus('Offline', 'error');
+  }
+}
+
+function getPods(weekN, dayIdx) {
+  const key = `${weekN}-${dayIdx}`;
+  return progress[key] || 0;
+}
+
+async function setPods(weekN, dayIdx, pods) {
+  const key = `${weekN}-${dayIdx}`;
+  if (pods <= 0) delete progress[key];
+  else progress[key] = pods;
+  saveLocal();
+  render();
+
+  if (USING_SHEET) {
+    setStatus('Saving...', 'syncing');
+    try {
+      await callSheet({ action: 'setPods', week: weekN, day: dayIdx, pods: pods });
+      setStatus('Saved', 'synced');
+      setTimeout(() => setStatus(''), 1500);
+    } catch (e) {
+      setStatus('Will retry', 'error');
+    }
+  }
+}
+
+async function saveExpandedWeek() {
+  saveLocal();
+  if (USING_SHEET && expandedWeek) {
+    try {
+      await callSheet({ action: 'setExpandedWeek', week: expandedWeek });
+    } catch (e) {}
+  }
+}
+
+function weekStats(w) {
+  let logged = 0;
+  let daysLogged = 0;
+  let daysUnderLimit = 0;
+  for (let d = 0; d < 7; d++) {
+    const key = `${w.n}-${d}`;
+    if (key in progress) {
+      daysLogged++;
+      logged += progress[key];
+      if (progress[key] <= w.limit) daysUnderLimit++;
+    }
+  }
+  return { logged, daysLogged, daysUnderLimit };
+}
+
+function render() {
+  grid.innerHTML = '';
+  weeks.forEach(w => {
+    const isOpen = expandedWeek === w.n;
+    const stats = weekStats(w);
+    const weekEl = document.createElement('div');
+    weekEl.className = 'week-block' + (isOpen ? ' open' : '');
+
+    const header = document.createElement('button');
+    header.className = 'week-header';
+    header.innerHTML = `
+      <div class="week-header-left">
+        <div class="week-num">Week ${w.n}</div>
+        <div class="week-pods">${w.perDay}${w.perDay !== 'None' ? ' a day' : ''}</div>
+        <div class="week-note">${w.note}</div>
+      </div>
+      <div class="week-header-right">
+        <div class="week-progress-pill">${stats.daysLogged}/7 days</div>
+        <div class="chevron">${isOpen ? '▾' : '▸'}</div>
+      </div>
+    `;
+    header.onclick = () => {
+      expandedWeek = isOpen ? null : w.n;
+      saveExpandedWeek();
+      render();
+    };
+    weekEl.appendChild(header);
+
+    if (isOpen) {
+      const daysWrap = document.createElement('div');
+      daysWrap.className = 'days-wrap';
+      for (let d = 0; d < 7; d++) {
+        const pods = getPods(w.n, d);
+        const logged = `${w.n}-${d}` in progress;
+        const overLimit = logged && pods > w.limit;
+        const dayRow = document.createElement('div');
+        dayRow.className = 'day-row' + (logged ? ' logged' : '') + (overLimit ? ' over' : '');
+        dayRow.innerHTML = `
+          <div class="day-label">${DAYS[d]}</div>
+          <div class="day-counter">
+            <button class="day-btn" data-action="minus" aria-label="Subtract half pod">−</button>
+            <div class="day-pods">${logged ? formatPods(pods) : '—'}</div>
+            <button class="day-btn" data-action="plus" aria-label="Add half pod">+</button>
+          </div>
+          <div class="day-status">${logged ? (overLimit ? 'Over' : 'Under') : ''}</div>
+        `;
+        dayRow.querySelector('[data-action="minus"]').onclick = () => setPods(w.n, d, Math.max(0, pods - 0.5));
+        dayRow.querySelector('[data-action="plus"]').onclick = () => setPods(w.n, d, pods + 0.5);
+        daysWrap.appendChild(dayRow);
+      }
+      const weekTotal = document.createElement('div');
+      weekTotal.className = 'week-total';
+      weekTotal.innerHTML = `
+        <span class="week-total-label">Week total</span>
+        <span class="week-total-value">${formatPods(stats.logged)} / ${w.weekly} pods</span>
+      `;
+      daysWrap.appendChild(weekTotal);
+      weekEl.appendChild(daysWrap);
+    }
+
+    grid.appendChild(weekEl);
+  });
+
+  // Money saved: baseline (2/day) minus actual, × pod cost, only for logged days
+  let saved = 0;
+  Object.entries(progress).forEach(([key, pods]) => {
+    saved += Math.max(0, (BASELINE_DAILY - pods)) * POD_COST;
+  });
+  moneyEl.textContent = '$' + Math.round(saved).toLocaleString();
+}
+
+function formatPods(n) {
+  if (n === 0) return '0';
+  if (n === 0.25) return '¼';
+  if (n === 0.5) return '½';
+  if (n === 0.75) return '¾';
+  if (n === 1) return '1';
+  if (Number.isInteger(n)) return String(n);
+  // handle 1.5, 2.5 etc
+  const whole = Math.floor(n);
+  const frac = n - whole;
+  const fracStr = frac === 0.25 ? '¼' : frac === 0.5 ? '½' : frac === 0.75 ? '¾' : '';
+  return fracStr ? `${whole}${fracStr}` : n.toFixed(2);
+}
+
+async function resetProgress() {
+  if (confirm('Reset all progress?')) {
+    progress = {};
+    expandedWeek = 1;
+    saveLocal();
+    render();
+    if (USING_SHEET) {
+      setStatus('Resetting...', 'syncing');
+      try {
+        await callSheet({ action: 'reset' });
+        setStatus('Reset', 'synced');
+        setTimeout(() => setStatus(''), 1500);
+      } catch (e) {
+        setStatus('Offline', 'error');
+      }
+    }
+  }
+}
+
+render();
+loadFromSheet();
+</script>
+
+</body>
+</html>
